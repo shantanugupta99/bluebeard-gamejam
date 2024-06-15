@@ -1,1 +1,2 @@
-# bluebeard-gamejam
+# BlueBeard-Jam
+ 
