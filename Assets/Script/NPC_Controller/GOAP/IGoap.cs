@@ -14,6 +14,6 @@ public interface IGoap
 
    void planAborted(GoapAction aborter); //an action caused plan to abort. said action is returned
    
-   bool moveAgent(GoapAction nextAction); //called during Update. move agent towards target object. return true if at target and action can perform otherwise false
+   public bool moveAgent(GoapAction nextAction); //called during Update. move agent towards target object. return true if at target and action can perform otherwise false
 
 }
