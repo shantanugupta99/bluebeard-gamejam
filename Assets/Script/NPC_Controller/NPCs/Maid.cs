@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class Maid : MonoBehaviour, IGoap
 {
     public GameObject duster;
     public float moveSpeed;
+    private FurnitureComponent[] furniture;
+    private float dirtyFurnCount = 0;
 
     void Start()
     {
@@ -21,6 +24,7 @@ public class Maid : MonoBehaviour, IGoap
     {
         HashSet<KeyValuePair<string, object>> worldData =  new HashSet<KeyValuePair<string, object>>();
         worldData.Add(new KeyValuePair<string, object>("hasDuster", (duster != null)));
+        worldData.Add(new KeyValuePair<string, object>("dirtyFurnitureCount", GetDirtyFurnitureCount()));
         return worldData;
     }
 
@@ -28,14 +32,12 @@ public class Maid : MonoBehaviour, IGoap
     {
         HashSet<KeyValuePair<string,object>> goal = new HashSet<KeyValuePair<string,object>> ();
 		
-        goal.Add(new KeyValuePair<string, object>("dirtyFurniture", 0 ));
+        goal.Add(new KeyValuePair<string, object>("dirtyFurnitureCount", 0 ));
         return goal;
     }
     public void planFailed (HashSet<KeyValuePair<string, object>> failedGoal)
     {
-        // Not handling this here since we are making sure our goals will always succeed.
-        // But normally you want to make sure the world state has changed before running
-        // the same goal again, or else it will just fail.
+        
     }
 
     public void planFound (HashSet<KeyValuePair<string, object>> goal, Queue<GoapAction> actions)
@@ -67,6 +69,15 @@ public class Maid : MonoBehaviour, IGoap
             return true;
         } else
             return false;
+    }
+
+    private float GetDirtyFurnitureCount()
+    {
+        furniture = ((FurnitureComponent[])UnityEngine.GameObject.FindObjectsOfType(typeof(FurnitureComponent)))
+            .Where(f => f.dirty)
+            .ToArray();
+        dirtyFurnCount = furniture.Length;
+        return dirtyFurnCount;
     }
     
 }

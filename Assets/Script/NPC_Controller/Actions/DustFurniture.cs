@@ -17,9 +17,9 @@ public class DustFurniture : GoapAction
         furniture = ((FurnitureComponent[])UnityEngine.GameObject.FindObjectsOfType(typeof(FurnitureComponent)))
             .Where(f => !f.dirty)
             .ToArray();
-        addPrecondition("dirtyFurniture", (furniture.Length > 0));
+        addPrecondition("dirtyFurnitureCount", true);
         addPrecondition("hasDuster",true);
-        addEffect("dirtyFurniture",(furniture.Length - 1));
+        addEffect("dirtyFurnitureCount",-1);
         
     }
 
@@ -28,6 +28,11 @@ public class DustFurniture : GoapAction
         dusted = false;
         targetFurniture = null;
         startTime = 0;
+    }
+
+    public void doReset()
+    {
+        reset();
     }
     public override bool isDone()
     {
@@ -42,7 +47,7 @@ public class DustFurniture : GoapAction
     public override bool checkProceduralPrecondition(GameObject agent)
     {
         furniture = ((FurnitureComponent[])UnityEngine.GameObject.FindObjectsOfType(typeof(FurnitureComponent)))
-            .Where(f => !f.dirty)
+            .Where(f => f.dirty)
             .ToArray();
         FurnitureComponent closest = null;
         float closestDist = 0;

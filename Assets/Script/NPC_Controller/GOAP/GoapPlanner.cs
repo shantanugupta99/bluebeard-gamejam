@@ -26,7 +26,7 @@ public class GoapPlanner
         bool success = buildGraph(start, leaves, usableActions, goal);
         if (!success)
         {
-            Debug.Log("no plan found");
+            Debug.Log("No plan found. Available actions: " + string.Join(", ", usableActions));
             return null;
         }
         Node cheapest = null;
