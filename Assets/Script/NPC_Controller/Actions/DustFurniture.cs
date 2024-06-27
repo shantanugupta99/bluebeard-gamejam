@@ -19,7 +19,7 @@ public class DustFurniture : GoapAction
             .ToArray();
         addPrecondition("dirtyFurnitureCount", true);
         addPrecondition("hasDuster",true);
-        addEffect("dirtyFurnitureCount",-1);
+        addEffect("dirtyFurnitureCount",false);
         
     }
 

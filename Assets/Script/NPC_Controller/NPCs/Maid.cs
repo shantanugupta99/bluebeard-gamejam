@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-
+using System.Text;
 public class Maid : MonoBehaviour, IGoap
 {
     public GameObject duster;
@@ -24,7 +24,8 @@ public class Maid : MonoBehaviour, IGoap
     {
         HashSet<KeyValuePair<string, object>> worldData =  new HashSet<KeyValuePair<string, object>>();
         worldData.Add(new KeyValuePair<string, object>("hasDuster", (duster != null)));
-        worldData.Add(new KeyValuePair<string, object>("dirtyFurnitureCount", GetDirtyFurnitureCount()));
+        worldData.Add(new KeyValuePair<string, object>("dirtyFurnitureCount", GetDirtyFurnitureCount()==0));
+        Debug.Log(DebugHashSet(worldData));
         return worldData;
     }
 
@@ -32,7 +33,7 @@ public class Maid : MonoBehaviour, IGoap
     {
         HashSet<KeyValuePair<string,object>> goal = new HashSet<KeyValuePair<string,object>> ();
 		
-        goal.Add(new KeyValuePair<string, object>("dirtyFurnitureCount", 0 ));
+        goal.Add(new KeyValuePair<string, object>("dirtyFurnitureCount", (GetDirtyFurnitureCount() == 0 )));
         return goal;
     }
     public void planFailed (HashSet<KeyValuePair<string, object>> failedGoal)
@@ -79,5 +80,15 @@ public class Maid : MonoBehaviour, IGoap
         dirtyFurnCount = furniture.Length;
         return dirtyFurnCount;
     }
-    
+    string DebugHashSet(HashSet<KeyValuePair<string, object>> hashSet)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine("HashSet contents:");
+        foreach (var kvp in hashSet)
+        {
+            sb.AppendLine($"  {kvp.Key}: {kvp.Value}");
+        }
+
+        return sb.ToString();
+    }
 }
