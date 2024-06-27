@@ -10,17 +10,13 @@ public class DustFurniture : GoapAction
     private FurnitureComponent targetFurniture; //furniture to dust
     private FurnitureComponent[] furniture;
     private float startTime = 0;
-    public float dustDuration = 2;
+    public float dustDuration = 1f;
 
-    public void DustFurnitureAction()
+    public DustFurniture()
     {
-        furniture = ((FurnitureComponent[])UnityEngine.GameObject.FindObjectsOfType(typeof(FurnitureComponent)))
-            .Where(f => !f.dirty)
-            .ToArray();
         addPrecondition("dirtyFurnitureCount", true);
         addPrecondition("hasDuster",true);
         addEffect("dirtyFurnitureCount",false);
-        
     }
 
     public override void reset()
@@ -36,6 +32,7 @@ public class DustFurniture : GoapAction
     }
     public override bool isDone()
     {
+        //doReset();
         return dusted;
     }
 	
@@ -85,18 +82,9 @@ public class DustFurniture : GoapAction
 
     public override bool performAction(GameObject agent)
     {
-        if (startTime == 0)
-        {
-            startTime = Time.time;
-        }
-
-        if (Time.time - startTime > dustDuration) // finished dusting
-        {
-            targetFurniture.dirty = false;
-            dusted = true;
-        }
-
+        targetFurniture.dirty = false;
+        dusted = true;
         return true;
     }
-    
+
 }

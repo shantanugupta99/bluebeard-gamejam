@@ -12,6 +12,9 @@ public class Maid : MonoBehaviour, IGoap
 
     void Start()
     {
+        furniture = ((FurnitureComponent[])UnityEngine.GameObject.FindObjectsOfType(typeof(FurnitureComponent)))
+            .Where(f => f.dirty)
+            .ToArray();
 
     }
 
@@ -63,8 +66,9 @@ public class Maid : MonoBehaviour, IGoap
         // move towards the NextAction's target
         float step = moveSpeed * Time.deltaTime;
         gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, nextAction.target.transform.position, step);
+        float distance = Vector3.Distance(gameObject.transform.position, nextAction.target.transform.position);
 		
-        if (gameObject.transform.position.Equals(nextAction.target.transform.position) ) {
+        if (distance<=2f) {
             // we are at the target location, we are done
             nextAction.setInRange(true);
             return true;
@@ -74,9 +78,6 @@ public class Maid : MonoBehaviour, IGoap
 
     private float GetDirtyFurnitureCount()
     {
-        furniture = ((FurnitureComponent[])UnityEngine.GameObject.FindObjectsOfType(typeof(FurnitureComponent)))
-            .Where(f => f.dirty)
-            .ToArray();
         dirtyFurnCount = furniture.Length;
         return dirtyFurnCount;
     }

@@ -11,7 +11,8 @@ public abstract class GoapAction : MonoBehaviour
     public float cost = 1f;
     public GameObject target;
     
-    public GoapAction() {
+    public GoapAction()
+    {
         preconditions = new HashSet<KeyValuePair<string, object>> ();
         effects = new HashSet<KeyValuePair<string, object>> ();
     }
