@@ -8,14 +8,18 @@ public class Maid : MonoBehaviour, IGoap
     public GameObject duster;
     public float moveSpeed;
     private FurnitureComponent[] furniture;
+    private PlantComponent[] plants;
     private float dirtyFurnCount = 0;
+    private float thirstyPlants;
 
     void Start()
     {
         furniture = ((FurnitureComponent[])UnityEngine.GameObject.FindObjectsOfType(typeof(FurnitureComponent)))
             .Where(f => f.dirty)
             .ToArray();
-
+        plants = ((PlantComponent[])UnityEngine.GameObject.FindObjectsOfType(typeof(PlantComponent)))
+            .Where(f => f.thirsty)
+            .ToArray();
     }
 
     void Update()
@@ -27,7 +31,9 @@ public class Maid : MonoBehaviour, IGoap
     {
         HashSet<KeyValuePair<string, object>> worldData =  new HashSet<KeyValuePair<string, object>>();
         worldData.Add(new KeyValuePair<string, object>("hasDuster", (duster != null)));
+        worldData.Add(new KeyValuePair<string, object>("hasWaterCan", false));
         worldData.Add(new KeyValuePair<string, object>("dirtyFurnitureCount", GetDirtyFurnitureCount()==0));
+        worldData.Add(new KeyValuePair<string, object>("plantThirsty", GetThirstyPlantsCount() == 0));
         Debug.Log(DebugHashSet(worldData));
         return worldData;
     }
@@ -37,6 +43,7 @@ public class Maid : MonoBehaviour, IGoap
         HashSet<KeyValuePair<string,object>> goal = new HashSet<KeyValuePair<string,object>> ();
 		
         goal.Add(new KeyValuePair<string, object>("dirtyFurnitureCount", (GetDirtyFurnitureCount() == 0 )));
+        goal.Add(new KeyValuePair<string, object>("plantThirsty", false));
         return goal;
     }
     public void planFailed (HashSet<KeyValuePair<string, object>> failedGoal)
@@ -91,5 +98,10 @@ public class Maid : MonoBehaviour, IGoap
         }
 
         return sb.ToString();
+    }
+    private float GetThirstyPlantsCount()
+    {
+        thirstyPlants = plants.Length;
+        return thirstyPlants;
     }
 }

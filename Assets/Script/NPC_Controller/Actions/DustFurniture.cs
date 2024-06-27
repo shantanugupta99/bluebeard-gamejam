@@ -82,7 +82,7 @@ public class DustFurniture : GoapAction
 
     public override bool performAction(GameObject agent)
     {
-        targetFurniture.dirty = false;
+        targetFurniture.ChangeStatus();
         dusted = true;
         return true;
     }
