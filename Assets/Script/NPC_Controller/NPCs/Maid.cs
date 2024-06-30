@@ -11,6 +11,7 @@ public class Maid : MonoBehaviour, IGoap
     private PlantComponent[] plants;
     private float dirtyFurnCount = 0;
     private float thirstyPlants;
+    public Animator maid_anim;
 
     void Start()
     {
@@ -20,6 +21,7 @@ public class Maid : MonoBehaviour, IGoap
         plants = ((PlantComponent[])UnityEngine.GameObject.FindObjectsOfType(typeof(PlantComponent)))
             .Where(f => f.thirsty)
             .ToArray();
+        maid_anim = GetComponent<Animator>();
     }
 
     void Update()
@@ -72,8 +74,13 @@ public class Maid : MonoBehaviour, IGoap
     public bool moveAgent(GoapAction nextAction) {
         // move towards the NextAction's target
         float step = moveSpeed * Time.deltaTime;
+        Vector3 direction = (nextAction.target.transform.position - transform.position).normalized;
+        maid_anim.SetBool("isMoving",true);
         gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, nextAction.target.transform.position, step);
+        maid_anim.SetFloat("Horizontal",direction.x);
+        maid_anim.SetFloat("Vertical",direction.y);
         float distance = Vector3.Distance(gameObject.transform.position, nextAction.target.transform.position);
+        
 		
         if (distance<=2f) {
             // we are at the target location, we are done
