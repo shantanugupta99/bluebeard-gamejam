@@ -26,7 +26,7 @@ public class DustFurniture : GoapAction
         startTime = 0;
     }
 
-    public void doReset()
+    public new void doReset()
     {
         reset();
     }

@@ -21,7 +21,7 @@ public class PickUpWatercan : GoapAction
         startTime = 0;
     }
 
-    public void doReset()
+    public new void doReset()
     {
         reset();
     }

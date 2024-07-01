@@ -12,16 +12,25 @@ public class Maid : MonoBehaviour, IGoap
     private float dirtyFurnCount = 0;
     private float thirstyPlants;
     public Animator maid_anim;
+    private List<HashSet<KeyValuePair<string, object>>> goals;
+    private int currentGoalIndex;
 
     void Start()
     {
-        furniture = ((FurnitureComponent[])UnityEngine.GameObject.FindObjectsOfType(typeof(FurnitureComponent)))
-            .Where(f => f.dirty)
-            .ToArray();
-        plants = ((PlantComponent[])UnityEngine.GameObject.FindObjectsOfType(typeof(PlantComponent)))
-            .Where(f => f.thirsty)
-            .ToArray();
+       
         maid_anim = GetComponent<Animator>();
+        goals = new List<HashSet<KeyValuePair<string, object>>>();
+        HashSet<KeyValuePair<string, object>> firstGoal = new HashSet<KeyValuePair<string, object>>
+        {
+            new KeyValuePair<string, object>("dirtyFurnitureCount", false)
+        };
+        HashSet<KeyValuePair<string, object>> secondGoal = new HashSet<KeyValuePair<string, object>>
+        {
+            new KeyValuePair<string, object>("plantThirsty", false)
+        };
+        goals.Add(firstGoal);
+        goals.Add(secondGoal);
+        currentGoalIndex = 0;
     }
 
     void Update()
@@ -33,20 +42,25 @@ public class Maid : MonoBehaviour, IGoap
     {
         HashSet<KeyValuePair<string, object>> worldData =  new HashSet<KeyValuePair<string, object>>();
         worldData.Add(new KeyValuePair<string, object>("hasDuster", (duster != null)));
-        worldData.Add(new KeyValuePair<string, object>("hasWaterCan", false));
-        worldData.Add(new KeyValuePair<string, object>("dirtyFurnitureCount", GetDirtyFurnitureCount()==0));
-        worldData.Add(new KeyValuePair<string, object>("plantThirsty", GetThirstyPlantsCount() == 0));
+        worldData.Add(new KeyValuePair<string, object>("hasWaterCan", true));
+        worldData.Add(new KeyValuePair<string, object>("dirtyFurnitureCount", GetDirtyFurnitureCount()>0));
+        worldData.Add(new KeyValuePair<string, object>("plantThirsty", GetThirstyPlantsCount() > 0));
         Debug.Log(DebugHashSet(worldData));
         return worldData;
     }
 
     public HashSet<KeyValuePair<string, object>> createGoalState()
     {
-        HashSet<KeyValuePair<string,object>> goal = new HashSet<KeyValuePair<string,object>> ();
-		
-        goal.Add(new KeyValuePair<string, object>("dirtyFurnitureCount", (GetDirtyFurnitureCount() == 0 )));
-        goal.Add(new KeyValuePair<string, object>("plantThirsty", false));
-        return goal;
+        if (currentGoalIndex < goals.Count)
+        {
+            HashSet<KeyValuePair<string,object>> goal = new HashSet<KeyValuePair<string,object>> (goals[currentGoalIndex]);
+            return goal;
+        }
+
+        return null;
+
+        //goal.Add(new KeyValuePair<string, object>("dirtyFurnitureCount", false));
+        //goal.Add(new KeyValuePair<string, object>("plantThirsty", false));
     }
     public void planFailed (HashSet<KeyValuePair<string, object>> failedGoal)
     {
@@ -62,6 +76,10 @@ public class Maid : MonoBehaviour, IGoap
     {
         // Everything is done, we completed our actions for this gool. Hooray!
         Debug.Log ("<color=blue>Actions completed</color>");
+        if (GetDirtyFurnitureCount() == 0)
+        {
+            currentGoalIndex++;
+        }
     }
 
     public void planAborted (GoapAction aborter)
@@ -74,11 +92,16 @@ public class Maid : MonoBehaviour, IGoap
     public bool moveAgent(GoapAction nextAction) {
         // move towards the NextAction's target
         float step = moveSpeed * Time.deltaTime;
-        Vector3 direction = (nextAction.target.transform.position - transform.position).normalized;
+        //Vector3 lastpos = gameObject.transform.position;
+        Vector3 targetpos = new Vector3(nextAction.target.transform.position.x, gameObject.transform.position.y, nextAction.target.transform.position.z);
+        Vector3 movementDirection = (targetpos - transform.position).normalized;
+        gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, targetpos, step);
         maid_anim.SetBool("isMoving",true);
-        gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, nextAction.target.transform.position, step);
-        maid_anim.SetFloat("Horizontal",direction.x);
-        maid_anim.SetFloat("Vertical",direction.y);
+        maid_anim.SetFloat("Horizontal",movementDirection.x);
+        maid_anim.SetFloat("Vertical",movementDirection.z);
+        
+       
+        
         float distance = Vector3.Distance(gameObject.transform.position, nextAction.target.transform.position);
         
 		
@@ -92,6 +115,9 @@ public class Maid : MonoBehaviour, IGoap
 
     private float GetDirtyFurnitureCount()
     {
+        furniture = ((FurnitureComponent[])UnityEngine.GameObject.FindObjectsOfType(typeof(FurnitureComponent)))
+            .Where(f => f.dirty)
+            .ToArray();
         dirtyFurnCount = furniture.Length;
         return dirtyFurnCount;
     }
@@ -108,6 +134,9 @@ public class Maid : MonoBehaviour, IGoap
     }
     private float GetThirstyPlantsCount()
     {
+        plants = ((PlantComponent[])UnityEngine.GameObject.FindObjectsOfType(typeof(PlantComponent)))
+            .Where(f => f.thirsty)
+            .ToArray();
         thirstyPlants = plants.Length;
         return thirstyPlants;
     }

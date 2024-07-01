@@ -10,6 +10,8 @@ public class WaterPlants : GoapAction
     private PlantComponent targetPlant; //furniture to dust
     private PlantComponent[] plants;
     private float startTime = 0;
+    private FurnitureComponent[] furniture;
+    private float dirtyFurnCount;
     public float waterDuration = 1f;
 
     public WaterPlants()
@@ -27,7 +29,7 @@ public class WaterPlants : GoapAction
         startTime = 0;
     }
 
-    public void doReset()
+    public new void doReset()
     {
         reset();
     }
